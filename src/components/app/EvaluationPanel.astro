@@ -1,0 +1,70 @@
+---
+---
+
+<div id="evaluation-panel" class="card-minimal max-w-4xl mx-auto mb-12 hidden">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Evaluación IA</h2>
+  
+    <!-- Score principal -->
+    <div class="text-center mb-8">
+      <div class="inline-block relative">
+        <svg class="w-32 h-32 transform -rotate-90">
+          <circle
+            cx="64"
+            cy="64"
+            r="56"
+            stroke="currentColor"
+            stroke-width="8"
+            fill="none"
+            class="text-gray-200"
+          />
+          <circle
+            id="score-circle"
+            cx="64"
+            cy="64"
+            r="56"
+            stroke="currentColor"
+            stroke-width="8"
+            fill="none"
+            class="text-gray-900"
+            stroke-dasharray="351.86"
+            stroke-dashoffset="351.86"
+            stroke-linecap="round"
+            style="transition: stroke-dashoffset 1s ease-in-out;"
+          />
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span id="score-value" class="text-4xl font-bold text-gray-900">0</span>
+        </div>
+      </div>
+      <p class="text-gray-600 mt-2">Puntuación General</p>
+    </div>
+  
+    <!-- Métricas detalladas -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="text-center p-4 bg-gray-50 rounded-xl">
+        <div class="text-2xl font-bold text-gray-900" id="contrast-value">0</div>
+        <div class="text-sm text-gray-600">Contraste</div>
+      </div>
+      <div class="text-center p-4 bg-gray-50 rounded-xl">
+        <div class="text-2xl font-bold text-gray-900" id="harmony-value">0</div>
+        <div class="text-sm text-gray-600">Armonía</div>
+      </div>
+      <div class="text-center p-4 bg-gray-50 rounded-xl">
+        <div class="text-2xl font-bold text-gray-900" id="accessibility-value">0</div>
+        <div class="text-sm text-gray-600">Accesibilidad</div>
+      </div>
+      <div class="text-center p-4 bg-gray-50 rounded-xl">
+        <div class="text-2xl font-bold text-gray-900" id="balance-value">0</div>
+        <div class="text-sm text-gray-600">Balance</div>
+      </div>
+    </div>
+  
+    <!-- Feedback -->
+    <div class="bg-gray-50 rounded-xl p-6">
+      <h3 class="font-semibold text-gray-900 mb-2">Análisis</h3>
+      <p id="feedback-text" class="text-gray-700 leading-relaxed">
+        Evaluando paleta...
+      </p>
+    </div>
+  </div>
+  

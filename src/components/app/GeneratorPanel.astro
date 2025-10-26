@@ -1,0 +1,110 @@
+---
+import { Sparkles, Image, Wand2 } from '@lucide/astro';
+---
+
+<div class="card-minimal max-w-4xl mx-auto mb-12">
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">Genera tu paleta</h2>
+
+  <!-- Tabs -->
+  <div class="flex gap-2 mb-6 border-b border-gray-200">
+    <button
+      class="generator-tab px-6 py-3 font-semibold transition-all border-b-2 border-transparent hover:text-gray-900 text-gray-600"
+      data-tab="description"
+    >
+      <div class="flex items-center gap-2">
+        <Sparkles class="w-5 h-5" />
+        <span>Descripción</span>
+      </div>
+    </button>
+    <button
+      class="generator-tab px-6 py-3 font-semibold transition-all border-b-2 border-transparent hover:text-gray-900 text-gray-600"
+      data-tab="image"
+    >
+      <div class="flex items-center gap-2">
+        <Image class="w-5 h-5" />
+        <span>Desde Imagen</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Panel: Descripción -->
+  <div id="tab-description" class="generator-content">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Describe el mood o concepto
+    </label>
+    <div class="flex gap-3">
+      <input
+        type="text"
+        id="description-input"
+        placeholder="Ej: atardecer en la playa, futurista cyberpunk, naturaleza primaveral..."
+        class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+      />
+      <button
+        id="generate-from-description-btn"
+        class="btn-primary flex items-center gap-2 whitespace-nowrap"
+      >
+        <Wand2 class="w-5 h-5" />
+        Generar
+      </button>
+    </div>
+    <p class="text-sm text-gray-500 mt-2">
+      La IA creará una paleta armónica basada en tu descripción
+    </p>
+  </div>
+
+  <!-- Panel: Imagen -->
+  <div id="tab-image" class="generator-content hidden">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Sube una imagen o pega una URL
+    </label>
+    
+    <!-- Dropzone -->
+    <div
+      id="dropzone"
+      class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-gray-400 transition-all cursor-pointer"
+    >
+      <Image class="w-12 h-12 mx-auto mb-3 text-gray-400" />
+      <p class="text-gray-600 mb-2">
+        Arrastra una imagen aquí o haz click para seleccionar
+      </p>
+      <p class="text-sm text-gray-500">PNG, JPG, WEBP hasta 5MB</p>
+      <input
+        type="file"
+        id="image-input"
+        accept="image/*"
+        class="hidden"
+      />
+    </div>
+
+    <div class="relative my-4">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-gray-300"></div>
+      </div>
+      <div class="relative flex justify-center text-sm">
+        <span class="px-2 bg-white text-gray-500">O</span>
+      </div>
+    </div>
+
+    <!-- URL Input -->
+    <div class="flex gap-3">
+      <input
+        type="url"
+        id="image-url-input"
+        placeholder="https://ejemplo.com/imagen.jpg"
+        class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+      />
+      <button
+        id="generate-from-image-btn"
+        class="btn-primary flex items-center gap-2 whitespace-nowrap"
+      >
+        <Wand2 class="w-5 h-5" />
+        Extraer
+      </button>
+    </div>
+
+    <!-- Preview -->
+    <div id="image-preview" class="mt-4 hidden">
+      <img src="" alt="Preview" class="max-h-40 rounded-lg mx-auto" />
+    </div>
+  </div>
+</div>

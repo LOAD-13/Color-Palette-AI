@@ -1,0 +1,30 @@
+---
+import { Github, Twitter, Mail } from '@lucide/astro';
+---
+
+<footer class="py-12 px-6 bg-gray-50 border-t border-gray-200">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="text-center md:text-left">
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Color Palette AI</h3>
+        <p class="text-gray-600 text-sm">Powered by Gemini AI</p>
+      </div>
+
+      <div class="flex gap-4">
+        <a href="https://github.com/tuusuario" target="_blank" rel="noopener" class="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200">
+          <Github class="w-5 h-5 text-gray-900" />
+        </a>
+        <a href="https://twitter.com/tuusuario" target="_blank" rel="noopener" class="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200">
+          <Twitter class="w-5 h-5 text-gray-900" />
+        </a>
+        <a href="mailto:tu@email.com" class="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200">
+          <Mail class="w-5 h-5 text-gray-900" />
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center mt-8 text-sm text-gray-500">
+      © {new Date().getFullYear()} Color Palette AI. Todos los derechos reservados.
+    </div>
+  </div>
+</footer>

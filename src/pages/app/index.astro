@@ -1,0 +1,491 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import PaletteGrid from '../../components/app/PaletteGrid.astro';
+import GeneratorPanel from '../../components/app/GeneratorPanel.astro';
+import EvaluationPanel from '../../components/app/EvaluationPanel.astro';
+import ExportPanel from '../../components/app/ExportPanel.astro';
+import PreviewBento from '../../components/app/PreviewBento.astro';
+---
+
+<AppLayout title="Generador - Color Palette AI">
+  <!-- Título principal -->
+  <div class="text-center mb-12 fade-in-up">
+    <h1 class="text-4xl md:text-5xl font-bold gradient-text mb-4">
+      Generador de Paletas IA
+    </h1>
+    <p class="text-gray-600 text-lg">
+      Crea, evalúa y exporta paletas profesionales en segundos
+    </p>
+  </div>
+
+  <!-- Paleta actual -->
+  <PaletteGrid />
+
+  <!-- Panel generador -->
+  <GeneratorPanel />
+
+  <!-- Panel evaluación (oculto inicialmente) -->
+  <EvaluationPanel />
+
+  <!-- Panel exportación (oculto inicialmente) -->
+  <ExportPanel />
+
+  <!-- Preview Bento Grid -->
+  <PreviewBento />
+</AppLayout>
+
+<script>
+  import { PaletteManager } from '../../scripts/paletteGenerator';
+  import { evaluateCurrentPalette, displayEvaluation } from '../../scripts/paletteEvaluator';
+  import { displayExportFormats, copyToClipboard } from '../../scripts/exportHandler';
+
+  // Estado global
+  const paletteManager = new PaletteManager();
+  let isLoading = false;
+
+  // Toast helper
+  function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `px-6 py-3 rounded-xl shadow-lg text-white font-semibold transform transition-all duration-300 translate-x-0 ${
+      type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-gray-900'
+    }`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.transform = 'translateX(400px)';
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Loading helper
+  function setLoading(loading: boolean) {
+    isLoading = loading;
+    const buttons = document.querySelectorAll('button[id*="generate"], button[id*="evaluate"], button[id*="improve"]');
+    buttons.forEach(btn => {
+      const button = btn as HTMLButtonElement;
+      button.disabled = loading;
+      button.style.opacity = loading ? '0.6' : '1';
+      button.style.cursor = loading ? 'wait' : 'pointer';
+    });
+  }
+
+  // Renderizar paleta
+  function renderPalette() {
+    const grid = document.getElementById('palette-grid');
+    if (!grid) return;
+
+    const colors = paletteManager.getColors();
+    
+    grid.innerHTML = colors.map((color, index) => {
+      const textColor = getTextColor(color.hex);
+      return `
+        <div class="color-card group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
+             style="background-color: ${color.hex};"
+             data-color="${color.hex}"
+             data-index="${index}">
+          <div class="aspect-square flex flex-col items-center justify-center p-6 relative">
+            <div class="text-2xl font-bold mb-2 tracking-wider" style="color: ${textColor};">
+              ${color.hex.toUpperCase()}
+            </div>
+            <div class="flex gap-2 mt-4">
+              <button class="copy-btn p-2 rounded-lg backdrop-blur-sm transition-all hover:scale-110"
+                      style="background-color: ${textColor === '#FFFFFF' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}; color: ${textColor};"
+                      data-color="${color.hex}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+              <button class="lock-btn p-2 rounded-lg backdrop-blur-sm transition-all hover:scale-110"
+                      style="background-color: ${textColor === '#FFFFFF' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}; color: ${textColor};"
+                      data-index="${index}"
+                      data-locked="${color.locked}">
+                ${color.locked ? 
+                  '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>' :
+                  '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg>'
+                }
+              </button>
+            </div>
+            ${color.locked ? `
+              <div class="absolute top-3 right-3 p-1.5 rounded-lg backdrop-blur-sm"
+                   style="background-color: ${textColor === '#FFFFFF' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}; color: ${textColor};">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Reattach event listeners
+    attachColorCardListeners();
+    updatePreview();
+  }
+
+  function getTextColor(hex: string): string {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? '#000000' : '#FFFFFF';
+  }
+
+  // Event listeners para color cards
+  function attachColorCardListeners() {
+    // Copy buttons
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const color = (btn as HTMLElement).dataset.color!;
+        await copyToClipboard(color);
+        showToast(`${color} copiado!`, 'success');
+      });
+    });
+
+    // Lock buttons
+    document.querySelectorAll('.lock-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt((btn as HTMLElement).dataset.index!);
+        paletteManager.toggleLock(index);
+        renderPalette();
+        showToast(
+          paletteManager.getColors()[index].locked ? 'Color bloqueado' : 'Color desbloqueado',
+          'info'
+        );
+      });
+    });
+
+    // Click en card para editar
+    document.querySelectorAll('.color-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const index = parseInt((card as HTMLElement).dataset.index!);
+        const input = document.createElement('input');
+        input.type = 'color';
+        input.value = paletteManager.getColors()[index].hex;
+        input.addEventListener('change', (e) => {
+          const newColor = (e.target as HTMLInputElement).value;
+          paletteManager.updateColor(index, newColor);
+          renderPalette();
+        });
+        input.click();
+      });
+    });
+  }
+
+  // Tabs del generador
+  document.querySelectorAll('.generator-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = (tab as HTMLElement).dataset.tab;
+      
+      // Update tab styles
+      document.querySelectorAll('.generator-tab').forEach(t => {
+        t.classList.remove('border-gray-900', 'text-gray-900');
+        t.classList.add('border-transparent', 'text-gray-600');
+      });
+      tab.classList.add('border-gray-900', 'text-gray-900');
+      tab.classList.remove('border-transparent', 'text-gray-600');
+
+      // Show/hide content
+      document.querySelectorAll('.generator-content').forEach(content => {
+        content.classList.add('hidden');
+      });
+      document.getElementById(`tab-${targetTab}`)?.classList.remove('hidden');
+    });
+  });
+
+  // Set default tab
+  document.querySelector('[data-tab="description"]')?.classList.add('border-gray-900', 'text-gray-900');
+
+  // Generar aleatorio
+  document.getElementById('generate-random-btn')?.addEventListener('click', async () => {
+    setLoading(true);
+    await paletteManager.generateRandom();
+    renderPalette();
+    showToast('Paleta generada aleatoriamente', 'success');
+    setLoading(false);
+  });
+
+  // Generar desde descripción
+  document.getElementById('generate-from-description-btn')?.addEventListener('click', async () => {
+    const input = document.getElementById('description-input') as HTMLInputElement;
+    const description = input.value.trim();
+
+    if (!description) {
+      showToast('Por favor escribe una descripción', 'error');
+      return;
+    }
+
+    setLoading(true);
+    showToast('Generando con IA...', 'info');
+    
+    const success = await paletteManager.generateFromDescription(description);
+    
+    if (success) {
+      renderPalette();
+      showToast('¡Paleta generada con éxito!', 'success');
+    } else {
+      showToast('Error al generar paleta', 'error');
+    }
+    
+    setLoading(false);
+  });
+
+  // Generar desde imagen (file upload)
+  const dropzone = document.getElementById('dropzone');
+  const imageInput = document.getElementById('image-input') as HTMLInputElement;
+  const imagePreview = document.getElementById('image-preview');
+
+  dropzone?.addEventListener('click', () => imageInput.click());
+
+  dropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('border-gray-900', 'bg-gray-50');
+  });
+
+  dropzone?.addEventListener('dragleave', () => {
+    dropzone.classList.remove('border-gray-900', 'bg-gray-50');
+  });
+
+  dropzone?.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('border-gray-900', 'bg-gray-50');
+    
+    const file = e.dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      await processImageFile(file);
+    } else {
+      showToast('Por favor sube una imagen válida', 'error');
+    }
+  });
+
+  imageInput?.addEventListener('change', async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) {
+      await processImageFile(file);
+    }
+  });
+
+  async function processImageFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const imageUrl = e.target?.result as string;
+      
+      // Show preview
+      if (imagePreview) {
+        const img = imagePreview.querySelector('img');
+        if (img) {
+          img.src = imageUrl;
+          imagePreview.classList.remove('hidden');
+        }
+      }
+
+      setLoading(true);
+      showToast('Extrayendo colores...', 'info');
+
+      const success = await paletteManager.generateFromImage(imageUrl);
+
+      if (success) {
+        renderPalette();
+        showToast('¡Colores extraídos con éxito!', 'success');
+      } else {
+        showToast('Error al extraer colores', 'error');
+      }
+
+      setLoading(false);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Generar desde URL de imagen
+  document.getElementById('generate-from-image-btn')?.addEventListener('click', async () => {
+    const input = document.getElementById('image-url-input') as HTMLInputElement;
+    const imageUrl = input.value.trim();
+
+    if (!imageUrl) {
+      showToast('Por favor ingresa una URL', 'error');
+      return;
+    }
+
+    setLoading(true);
+    showToast('Extrayendo colores...', 'info');
+
+    const success = await paletteManager.generateFromImage(imageUrl);
+
+    if (success) {
+      renderPalette();
+      showToast('¡Colores extraídos con éxito!', 'success');
+      
+      // Show preview
+      if (imagePreview) {
+        const img = imagePreview.querySelector('img');
+        if (img) {
+          img.src = imageUrl;
+          imagePreview.classList.remove('hidden');
+        }
+      }
+    } else {
+      showToast('Error al cargar la imagen', 'error');
+    }
+
+    setLoading(false);
+  });
+
+  // Evaluar paleta
+  document.getElementById('evaluate-btn')?.addEventListener('click', async () => {
+    setLoading(true);
+    showToast('Evaluando con IA...', 'info');
+
+    const colors = paletteManager.getColors().map(c => c.hex);
+    const evaluation = await evaluateCurrentPalette(colors);
+
+    if (evaluation) {
+      displayEvaluation(evaluation);
+      showToast('¡Evaluación completada!', 'success');
+    } else {
+      showToast('Error al evaluar paleta', 'error');
+    }
+
+    setLoading(false);
+  });
+
+  // Mejorar paleta
+  document.getElementById('improve-btn')?.addEventListener('click', async () => {
+    setLoading(true);
+    showToast('Mejorando con IA...', 'info');
+
+    const success = await paletteManager.improve();
+
+    if (success) {
+      renderPalette();
+      showToast('¡Paleta mejorada!', 'success');
+    } else {
+      showToast('Error al mejorar paleta', 'error');
+    }
+
+    setLoading(false);
+  });
+
+  // Exportar
+  document.getElementById('export-btn')?.addEventListener('click', () => {
+    const colors = paletteManager.getColors();
+    displayExportFormats(colors);
+    showToast('Formatos de exportación listos', 'success');
+  });
+
+  // Copiar formatos de exportación
+  document.querySelectorAll('.export-copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const format = (btn as HTMLElement).dataset.format!;
+      const element = document.getElementById(`export-${format}`);
+      
+      if (element) {
+        await copyToClipboard(element.textContent || '');
+        showToast(`${format.toUpperCase()} copiado!`, 'success');
+      }
+    });
+  });
+
+  // Cerrar panel de exportación
+  document.getElementById('close-export-btn')?.addEventListener('click', () => {
+    document.getElementById('export-panel')?.classList.add('hidden');
+  });
+
+  // Preview Bento Grid
+  function updatePreview() {
+    const bento = document.getElementById('preview-bento');
+    if (!bento) return;
+
+    const colors = paletteManager.getColors();
+    const [c1, c2, c3, c4, c5] = colors.map(c => c.hex);
+
+    bento.innerHTML = `
+      <!-- Hero mockup -->
+      <div class="p-8 rounded-2xl" style="background: linear-gradient(135deg, ${c1}, ${c2});">
+        <div class="text-white">
+          <h3 class="text-2xl font-bold mb-2">Hero Section</h3>
+          <p class="opacity-90">Lorem ipsum dolor sit amet</p>
+          <button class="mt-4 px-6 py-2 rounded-lg font-semibold" style="background-color: ${c3}; color: white;">
+            Call to Action
+          </button>
+        </div>
+      </div>
+
+      <!-- Card mockup -->
+      <div class="p-6 rounded-2xl" style="background-color: ${c2};">
+        <div style="color: ${getTextColor(c2)};">
+          <div class="w-12 h-12 rounded-lg mb-4" style="background-color: ${c1};"></div>
+          <h4 class="font-bold mb-2">Feature Card</h4>
+          <p class="text-sm opacity-80">Component preview</p>
+        </div>
+      </div>
+
+      <!-- Badges mockup -->
+      <div class="p-6 rounded-2xl bg-white border-2" style="border-color: ${c3};">
+        <div class="flex flex-wrap gap-2">
+          <span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: ${c1}; color: white;">Badge</span>
+          <span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: ${c4}; color: white;">Badge</span>
+          <span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: ${c5}; color: white;">Badge</span>
+        </div>
+      </div>
+
+      <!-- Button group -->
+      <div class="p-6 rounded-2xl bg-gray-50 flex flex-col gap-3">
+        <button class="px-4 py-2 rounded-lg font-semibold text-white" style="background-color: ${c1};">Primary</button>
+        <button class="px-4 py-2 rounded-lg font-semibold text-white" style="background-color: ${c2};">Secondary</button>
+        <button class="px-4 py-2 rounded-lg font-semibold border-2" style="border-color: ${c3}; color: ${c3};">Outline</button>
+      </div>
+
+      <!-- Progress bars -->
+      <div class="p-6 rounded-2xl bg-white border border-gray-200 space-y-3">
+        <div class="h-2 rounded-full bg-gray-200">
+          <div class="h-full rounded-full" style="background-color: ${c1}; width: 75%;"></div>
+        </div>
+        <div class="h-2 rounded-full bg-gray-200">
+          <div class="h-full rounded-full" style="background-color: ${c4}; width: 50%;"></div>
+        </div>
+        <div class="h-2 rounded-full bg-gray-200">
+          <div class="h-full rounded-full" style="background-color: ${c5}; width: 90%;"></div>
+        </div>
+      </div>
+
+      <!-- Stats card -->
+      <div class="p-6 rounded-2xl" style="background-color: ${c5};">
+        <div style="color: ${getTextColor(c5)};">
+          <div class="text-4xl font-bold mb-1">1.2K</div>
+          <div class="text-sm opacity-80">Users</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Subscribe to palette changes
+  paletteManager.subscribe(renderPalette);
+
+  // Initial render
+  renderPalette();
+</script>
+
+<style>
+  .fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

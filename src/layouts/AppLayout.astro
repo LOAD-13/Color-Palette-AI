@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+import { ArrowLeft } from '@lucide/astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Generador de Paletas - Color Palette AI' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Header con botón de regreso -->
+    <header class="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <ArrowLeft class="w-5 h-5 text-gray-900" />
+          <span class="font-semibold text-gray-900">Volver al inicio</span>
+        </a>
+        
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span class="text-sm text-gray-600">IA Activa</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+      <slot />
+    </main>
+
+    <!-- Toast container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
+  </body>
+</html>

@@ -1,0 +1,91 @@
+---
+import { Download, Copy, Check } from '@lucide/astro';
+---
+
+<div id="export-panel" class="card-minimal max-w-4xl mx-auto mb-12 hidden">
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">Exportar Paleta</h2>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <!-- HEX -->
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-gray-900">HEX</h3>
+        <button class="export-copy-btn p-2 hover:bg-gray-200 rounded-lg transition-colors" data-format="hex">
+          <Copy class="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+      <code id="export-hex" class="block text-sm text-gray-700 font-mono bg-white p-3 rounded-lg overflow-x-auto">
+        #FF6B6B, #4ECDC4, #45B7D1...
+      </code>
+    </div>
+
+    <!-- RGB -->
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-gray-900">RGB</h3>
+        <button class="export-copy-btn p-2 hover:bg-gray-200 rounded-lg transition-colors" data-format="rgb">
+          <Copy class="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+      <code id="export-rgb" class="block text-sm text-gray-700 font-mono bg-white p-3 rounded-lg overflow-x-auto">
+        rgb(255, 107, 107)...
+      </code>
+    </div>
+
+    <!-- HSL -->
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-gray-900">HSL</h3>
+        <button class="export-copy-btn p-2 hover:bg-gray-200 rounded-lg transition-colors" data-format="hsl">
+          <Copy class="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+      <code id="export-hsl" class="block text-sm text-gray-700 font-mono bg-white p-3 rounded-lg overflow-x-auto">
+        hsl(0, 100%, 71%)...
+      </code>
+    </div>
+
+    <!-- CSS Variables -->
+    <div class="bg-gray-50 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-gray-900">CSS Variables</h3>
+        <button class="export-copy-btn p-2 hover:bg-gray-200 rounded-lg transition-colors" data-format="css">
+          <Copy class="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+      <code id="export-css" class="block text-sm text-gray-700 font-mono bg-white p-3 rounded-lg overflow-x-auto">
+        --color-1: #FF6B6B;...
+      </code>
+    </div>
+
+    <!-- Tailwind Config -->
+    <div class="bg-gray-50 rounded-xl p-4 md:col-span-2">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-gray-900">Tailwind Config</h3>
+        <button class="export-copy-btn p-2 hover:bg-gray-200 rounded-lg transition-colors" data-format="tailwind">
+          <Copy class="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+      <code id="export-tailwind" class="block text-sm text-gray-700 font-mono bg-white p-3 rounded-lg overflow-x-auto whitespace-pre">
+        {`colors: { primary: '#FF6B6B', ... }`}
+      </code>
+    </div>
+
+    <!-- JSON -->
+    <div class="bg-gray-50 rounded-xl p-4 md:col-span-2">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-gray-900">JSON</h3>
+        <button class="export-copy-btn p-2 hover:bg-gray-200 rounded-lg transition-colors" data-format="json">
+          <Copy class="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+      <code id="export-json" class="block text-sm text-gray-700 font-mono bg-white p-3 rounded-lg overflow-x-auto whitespace-pre">
+        {`{ "palette": [...] }`}
+      </code>
+    </div>
+  </div>
+
+  <button id="close-export-btn" class="btn-secondary w-full mt-6">
+    Cerrar
+  </button>
+</div>
