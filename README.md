@@ -87,39 +87,47 @@ Navega a `http://localhost:4321`
 color-palette-ai/
 ├── public/
 │ └── favicon.svg
+│
 ├── src/
 │ ├── components/
-│ │ ├── landing/ # Componentes de la landing page
+│ │ ├── landing/
 │ │ │ ├── Hero.astro
 │ │ │ ├── Features.astro
 │ │ │ ├── Demo.astro
 │ │ │ ├── CTA.astro
 │ │ │ └── Footer.astro
-│ │ └── app/ # Componentes de la aplicación
+│ │ │
+│ │ └── app/
 │ │ ├── ColorCard.astro
 │ │ ├── PaletteGrid.astro
 │ │ ├── GeneratorPanel.astro
 │ │ ├── EvaluationPanel.astro
 │ │ ├── ExportPanel.astro
 │ │ └── PreviewBento.astro
+│ │
 │ ├── layouts/
 │ │ ├── BaseLayout.astro
 │ │ └── AppLayout.astro
+│ │
 │ ├── lib/
-│ │ ├── gemini.ts # Cliente de Gemini AI
-│ │ ├── colorUtils.ts # Utilidades de color
-│ │ ├── imageProcessor.ts # Procesamiento de imágenes
-│ │ └── types.ts # Tipos TypeScript
+│ │ ├── gemini.ts
+│ │ ├── colorUtils.ts
+│ │ ├── imageProcessor.ts
+│ │ └── types.ts
+│ │
 │ ├── pages/
-│ │ ├── index.astro # Landing page
+│ │ ├── index.astro
 │ │ └── app/
-│ │ └── index.astro # Aplicación principal
+│ │ └── index.astro
+│ │
 │ ├── scripts/
 │ │ ├── paletteGenerator.ts
 │ │ ├── paletteEvaluator.ts
 │ │ └── exportHandler.ts
+│ │
 │ └── styles/
 │ └── global.css
+│
 ├── .env
 ├── .gitignore
 ├── astro.config.mjs
