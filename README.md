@@ -22,7 +22,7 @@ Generador y evaluador inteligente de paletas de colores con IA, desarrollado con
 
 ## 🚀 Demo en Vivo
 
-🔗 [Ver Demo](colors.jloadenegri.org) *(próximamente)*
+🔗 [Ver Demo](https://colors.jloadenegri.org) *(próximamente)*
 
 ## 🛠️ Tecnologías
 
