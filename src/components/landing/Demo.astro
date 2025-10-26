@@ -1,5 +1,5 @@
 ---
-import { Play } from '@lucide/astro';
+import { Play, Pause } from '@lucide/astro';
 ---
 
 <section class="py-24 px-6 bg-gray-50">
@@ -14,11 +14,129 @@ import { Play } from '@lucide/astro';
     </div>
 
     <div class="glass-effect rounded-3xl p-8 max-w-5xl mx-auto fade-in-up" style="animation-delay: 0.2s">
-      <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
-        <button class="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300 shadow-2xl">
-          <Play class="w-8 h-8 text-white ml-1" fill="currentColor" />
-        </button>
+      <div class="relative aspect-video bg-gray-900 rounded-2xl overflow-hidden group">
+        <!-- Video element -->
+        <video 
+          id="demo-video" 
+          class="w-full h-full object-cover"
+          poster="/demo-thumbnail.jpg"
+          preload="metadata"
+        >
+          <source src="/demo-video.mp4" type="video/mp4" />
+          Tu navegador no soporta el elemento de video.
+        </video>
+
+        <!-- Custom play button overlay -->
+        <div 
+          id="play-button-overlay" 
+          class="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm transition-opacity duration-300 cursor-pointer group-hover:bg-black/40"
+        >
+          <button 
+            id="play-button"
+            class="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center hover:scale-110 hover:bg-white transition-all duration-300 shadow-2xl"
+            aria-label="Reproducir video"
+          >
+            <Play class="w-8 h-8 text-gray-900 ml-1" fill="currentColor" />
+          </button>
+        </div>
+
+        <!-- Video controls (aparecen cuando se reproduce) -->
+        <div 
+          id="video-controls" 
+          class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 transition-opacity duration-300"
+        >
+          <div class="flex items-center gap-4">
+            <button 
+              id="pause-button"
+              class="text-white hover:text-gray-300 transition-colors"
+              aria-label="Pausar"
+            >
+              <Pause class="w-6 h-6" fill="currentColor" />
+            </button>
+            <div class="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+              <div id="progress-bar" class="h-full bg-white rounded-full transition-all" style="width: 0%"></div>
+            </div>
+            <span id="time-display" class="text-white text-sm font-medium">0:00 / 0:00</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  const video = document.getElementById('demo-video') as HTMLVideoElement;
+  const playButtonOverlay = document.getElementById('play-button-overlay');
+  const playButton = document.getElementById('play-button');
+  const pauseButton = document.getElementById('pause-button');
+  const videoControls = document.getElementById('video-controls');
+  const progressBar = document.getElementById('progress-bar');
+  const timeDisplay = document.getElementById('time-display');
+
+  // Play video
+  playButton?.addEventListener('click', () => {
+    video.play();
+    playButtonOverlay?.classList.add('opacity-0', 'pointer-events-none');
+    videoControls?.classList.remove('opacity-0');
+  });
+
+  // Pause video
+  pauseButton?.addEventListener('click', () => {
+    video.pause();
+    playButtonOverlay?.classList.remove('opacity-0', 'pointer-events-none');
+    videoControls?.classList.add('opacity-0');
+  });
+
+  // Click on video to play/pause
+  video?.addEventListener('click', () => {
+    if (video.paused) {
+      video.play();
+      playButtonOverlay?.classList.add('opacity-0', 'pointer-events-none');
+      videoControls?.classList.remove('opacity-0');
+    } else {
+      video.pause();
+      playButtonOverlay?.classList.remove('opacity-0', 'pointer-events-none');
+      videoControls?.classList.add('opacity-0');
+    }
+  });
+
+  // Update progress bar
+  video?.addEventListener('timeupdate', () => {
+    if (video.duration) {
+      const progress = (video.currentTime / video.duration) * 100;
+      if (progressBar) progressBar.style.width = `${progress}%`;
+      
+      // Update time display
+      const currentMinutes = Math.floor(video.currentTime / 60);
+      const currentSeconds = Math.floor(video.currentTime % 60);
+      const durationMinutes = Math.floor(video.duration / 60);
+      const durationSeconds = Math.floor(video.duration % 60);
+      
+      if (timeDisplay) {
+        timeDisplay.textContent = `${currentMinutes}:${currentSeconds.toString().padStart(2, '0')} / ${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`;
+      }
+    }
+  });
+
+  // Video ended
+  video?.addEventListener('ended', () => {
+    playButtonOverlay?.classList.remove('opacity-0', 'pointer-events-none');
+    videoControls?.classList.add('opacity-0');
+    video.currentTime = 0;
+  });
+
+  // Show/hide controls on hover
+  video?.parentElement?.addEventListener('mouseenter', () => {
+    if (!video.paused) {
+      videoControls?.classList.remove('opacity-0');
+    }
+  });
+
+  video?.parentElement?.addEventListener('mouseleave', () => {
+    if (!video.paused) {
+      setTimeout(() => {
+        videoControls?.classList.add('opacity-0');
+      }, 1000);
+    }
+  });
+</script>
