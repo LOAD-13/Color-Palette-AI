@@ -84,49 +84,50 @@ Navega a `http://localhost:4321`
 
 ## 📁 Estructura del Proyecto
 
+```bash
 color-palette-ai/
 ├── public/
-│ └── favicon.svg
+│   └── favicon.svg
 │
 ├── src/
-│ ├── components/
-│ │ ├── landing/
-│ │ │ ├── Hero.astro
-│ │ │ ├── Features.astro
-│ │ │ ├── Demo.astro
-│ │ │ ├── CTA.astro
-│ │ │ └── Footer.astro
-│ │ │
-│ │ └── app/
-│ │ ├── ColorCard.astro
-│ │ ├── PaletteGrid.astro
-│ │ ├── GeneratorPanel.astro
-│ │ ├── EvaluationPanel.astro
-│ │ ├── ExportPanel.astro
-│ │ └── PreviewBento.astro
-│ │
-│ ├── layouts/
-│ │ ├── BaseLayout.astro
-│ │ └── AppLayout.astro
-│ │
-│ ├── lib/
-│ │ ├── gemini.ts
-│ │ ├── colorUtils.ts
-│ │ ├── imageProcessor.ts
-│ │ └── types.ts
-│ │
-│ ├── pages/
-│ │ ├── index.astro
-│ │ └── app/
-│ │ └── index.astro
-│ │
-│ ├── scripts/
-│ │ ├── paletteGenerator.ts
-│ │ ├── paletteEvaluator.ts
-│ │ └── exportHandler.ts
-│ │
-│ └── styles/
-│ └── global.css
+│   ├── components/
+│   │   ├── landing/
+│   │   │   ├── Hero.astro
+│   │   │   ├── Features.astro
+│   │   │   ├── Demo.astro
+│   │   │   ├── CTA.astro
+│   │   │   └── Footer.astro
+│   │   │
+│   │   └── app/
+│   │       ├── ColorCard.astro
+│   │       ├── PaletteGrid.astro
+│   │       ├── GeneratorPanel.astro
+│   │       ├── EvaluationPanel.astro
+│   │       ├── ExportPanel.astro
+│   │       └── PreviewBento.astro
+│   │
+│   ├── layouts/
+│   │   ├── BaseLayout.astro
+│   │   └── AppLayout.astro
+│   │
+│   ├── lib/
+│   │   ├── gemini.ts
+│   │   ├── colorUtils.ts
+│   │   ├── imageProcessor.ts
+│   │   └── types.ts
+│   │
+│   ├── pages/
+│   │   ├── index.astro
+│   │   └── app/
+│   │       └── index.astro
+│   │
+│   ├── scripts/
+│   │   ├── paletteGenerator.ts
+│   │   ├── paletteEvaluator.ts
+│   │   └── exportHandler.ts
+│   │
+│   └── styles/
+│       └── global.css
 │
 ├── .env
 ├── .gitignore
@@ -134,6 +135,7 @@ color-palette-ai/
 ├── package.json
 ├── tsconfig.json
 └── README.md
+
 
 text
 
