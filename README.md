@@ -135,7 +135,7 @@ color-palette-ai/
 ├── package.json
 ├── tsconfig.json
 └── README.md
-
+```
 
 text
 
